@@ -1,0 +1,90 @@
+{% extends 'portfolio/base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1>Current Work & Research</h1>
+        <p class="lead">Explore my ongoing projects and research initiatives</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">AI-Powered Code Review System</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Research Project</h6>
+                <p class="card-text">
+                    Developing an AI system that automates code review processes using machine learning algorithms.
+                    The system analyzes code patterns, identifies potential bugs, and suggests improvements.
+                </p>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-code-branch"></i> Status: In Progress</li>
+                    <li><i class="fas fa-calendar"></i> Started: January 2024</li>
+                    <li><i class="fas fa-tags"></i> Tags: AI, Machine Learning, Code Quality</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Blockchain-based Supply Chain Solution</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Development Project</h6>
+                <p class="card-text">
+                    Building a decentralized supply chain management system using blockchain technology.
+                    The project aims to improve transparency and traceability in logistics operations.
+                </p>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-code-branch"></i> Status: Active Development</li>
+                    <li><i class="fas fa-calendar"></i> Started: November 2023</li>
+                    <li><i class="fas fa-tags"></i> Tags: Blockchain, Supply Chain, Smart Contracts</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Quantum Computing Research</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Academic Research</h6>
+                <p class="card-text">
+                    Investigating quantum algorithms for optimization problems in machine learning.
+                    The research focuses on developing new approaches to solve complex computational problems.
+                </p>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-code-branch"></i> Status: Research Phase</li>
+                    <li><i class="fas fa-calendar"></i> Started: September 2023</li>
+                    <li><i class="fas fa-tags"></i> Tags: Quantum Computing, Research, Algorithms</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Sustainable Tech Initiative</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Open Source Project</h6>
+                <p class="card-text">
+                    Leading an open-source project focused on developing sustainable technology solutions.
+                    The initiative aims to reduce carbon footprint in software development and deployment.
+                </p>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-code-branch"></i> Status: Community Building</li>
+                    <li><i class="fas fa-calendar"></i> Started: March 2024</li>
+                    <li><i class="fas fa-tags"></i> Tags: Sustainability, Open Source, Green Tech</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-center mt-4">
+    <a href="{% url 'home' %}" class="btn btn-primary">
+        <i class="fas fa-home"></i> Back to Home
+    </a>
+</div>
+{% endblock %} 
