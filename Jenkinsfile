@@ -10,7 +10,7 @@ pipeline {
 
     stage('Checkout') {
       steps {
-        git branch: 'main', url: 'https://github.com/HusseinMoukalled/Portfolio_Jenkins.git'
+        git branch: 'main', url: 'https://github.com/Ali-Moukallid/Jenkins_MiniKube_Portfolio'
       }
     }
 
