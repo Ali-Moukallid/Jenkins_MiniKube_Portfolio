@@ -22,20 +22,24 @@ pipeline {
     stage('Build in Minikube Docker') {
       steps {
         script {
-          // Generate a unique image tag using timestamp
+          // 🔖 Generate a unique tag (e.g. 20251026190545)
           def buildTag = new Date().format("yyyyMMddHHmmss")
-          env.IMAGE_TAG = buildTag
+          echo "🔖 Generated build tag: ${buildTag}"
 
-          // Switch to Minikube Docker and build the image
+          // Switch Jenkins Docker daemon to Minikube
           bat '''
-          REM === Switch Docker to Minikube Docker ===
           call minikube docker-env --shell=cmd > docker_env.bat
           call docker_env.bat
           '''
 
-          // Build with dynamic Groovy variable injection (Windows safe)
-          bat "docker build --no-cache -t mydjangoapp:${env.IMAGE_TAG} ."
-          bat "docker tag mydjangoapp:${env.IMAGE_TAG} mydjangoapp:latest"
+          // Build and tag image (use Groovy interpolation, not env vars)
+          bat """
+          docker build --no-cache -t mydjangoapp:${buildTag} .
+          docker tag mydjangoapp:${buildTag} mydjangoapp:latest
+          """
+
+          // Save tag for later stages
+          env.IMAGE_TAG = buildTag
 
           echo "✅ Built image mydjangoapp:${buildTag}"
         }
@@ -44,15 +48,29 @@ pipeline {
 
     stage('Deploy to Minikube') {
       steps {
-        bat '''
-        REM === Apply the Kubernetes deployment manifest ===
-        kubectl apply -f deployment.yaml
-        '''
+        script {
+          echo "🚀 Deploying to Minikube with image tag: ${env.IMAGE_TAG}"
 
-        // Use env var directly here too
-        bat "kubectl set image deployment/django-deployment django-container=mydjangoapp:${env.IMAGE_TAG}"
-        bat "kubectl rollout status deployment/django-deployment"
-        bat "kubectl get pods -o wide"
+          // Apply manifest (creates or updates Deployment)
+          bat "kubectl apply -f deployment.yaml"
+
+          // Update the image of the existing deployment
+          bat "kubectl set image deployment/django-deployment django-container=mydjangoapp:${env.IMAGE_TAG}"
+
+          // Wait for rollout completion
+          bat "kubectl rollout status deployment/django-deployment"
+
+          // Display running pods for verification
+          bat "kubectl get pods -o wide"
+        }
+      }
+    }
+
+    stage('Health Check') {
+      steps {
+        echo "🩺 Checking pod health..."
+        // Check if pods are ready (avoids silent rollout hangs)
+        bat 'kubectl get pods --no-headers | findstr /v Running && exit /b 1 || echo All pods are running.'
       }
     }
 
@@ -64,6 +82,7 @@ pipeline {
     }
     failure {
       echo "❌ Deployment failed. Check the logs above for details."
+      bat 'kubectl get pods -o wide'
     }
   }
 }
