@@ -7,7 +7,6 @@ pipeline {
   }
 
   environment {
-    // Use this to store and reuse your image tag within the pipeline
     IMAGE_TAG = ""
   }
 
@@ -27,17 +26,16 @@ pipeline {
           def buildTag = new Date().format("yyyyMMddHHmmss")
           env.IMAGE_TAG = buildTag
 
-          bat """
+          // Switch to Minikube Docker and build the image
+          bat '''
           REM === Switch Docker to Minikube Docker ===
           call minikube docker-env --shell=cmd > docker_env.bat
           call docker_env.bat
+          '''
 
-          REM === Build Django image inside Minikube Docker ===
-          docker build --no-cache -t mydjangoapp:%IMAGE_TAG% .
-
-          REM === Tag image as latest for convenience ===
-          docker tag mydjangoapp:%IMAGE_TAG% mydjangoapp:latest
-          """
+          // Build with dynamic Groovy variable injection (Windows safe)
+          bat "docker build --no-cache -t mydjangoapp:${env.IMAGE_TAG} ."
+          bat "docker tag mydjangoapp:${env.IMAGE_TAG} mydjangoapp:latest"
 
           echo "✅ Built image mydjangoapp:${buildTag}"
         }
@@ -46,19 +44,15 @@ pipeline {
 
     stage('Deploy to Minikube') {
       steps {
-        bat """
+        bat '''
         REM === Apply the Kubernetes deployment manifest ===
         kubectl apply -f deployment.yaml
+        '''
 
-        REM === Update the image to the new build tag ===
-        kubectl set image deployment/django-deployment django-container=mydjangoapp:%IMAGE_TAG%
-
-        REM === Wait for rollout to finish ===
-        kubectl rollout status deployment/django-deployment
-
-        REM === Verify pods ===
-        kubectl get pods -o wide
-        """
+        // Use env var directly here too
+        bat "kubectl set image deployment/django-deployment django-container=mydjangoapp:${env.IMAGE_TAG}"
+        bat "kubectl rollout status deployment/django-deployment"
+        bat "kubectl get pods -o wide"
       }
     }
 
